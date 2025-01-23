@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block title %}Bandeja Finalizados{% endblock %}
+
+{% block content %}
+
+    <h1 class="ms-2">Trámites Finalizados</h1>
+
+    <!-- Formulario de búsqueda -->
+
+    <!-- Formulario de búsqueda -->
+    <div class="container mb-3 mt-3 ms-1 me-1">
+        <div class="row">
+            <div class="col-12 col-md-6"> <!-- Usa col-12 en pantallas pequeñas y col-md-6 en pantallas más grandes -->
+                <div class="card shadow">
+                    <div class="card-body">
+                        <form method="GET" class="mb-4">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {% for field in form %}
+                                    <div class="row mb-3">
+                                        <label class="col-sm-4 col-form-label">{{ field.label_tag }}</label>
+                                        <div class="col-sm-8">
+                                            {{ field }}
+                                            {% if field.help_text %}
+                                                <small class="form-text text-muted">{{ field.help_text }}</small>
+                                            {% endif %}
+                                            {% for error in field.errors %}
+                                                <div class="text-danger">{{ error }}</div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-sm">Aplicar Filtro</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensajes de error -->
+    {% if messages %}
+    <ul>
+        {% for message in messages %}
+            <li class="alert {{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="container mb-3 mt-4 ms-1 me-1">
+        <div class="row">
+
+            <!-- Tarjeta de total  trámites -->
+            <div class="col-12 col-md-3 mb-3">
+                <div class="card shadow ">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <span>🔢</span> No Trámites
+                        </h5>
+                        <h6 class="card-subtitle mb-2 font-weight-bold">
+                            {{ tramites_totales }} Registros
+                        </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla con los trámites -->
+    <div class="Container mb-3 mt-1 ms-1 me-1">
+        <div class="card shadow">
+            <div class="card-body">
+
+                <!-- Tabla -->
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">No Oficio</th>
+                            <th scope="col">Tipo Tramite</th>
+                            <th scope="col">Prioridad</th>
+                            <th scope="col">Fecha Recepción</th>
+                            <th scope="col">Fecha Vencimiento</th>
+                            <th scope="col">Receptor Responsable</th>
+                            <th scope="col">Inspector Responsable</th>
+                            <th scope="col">Resultor Responsable</th>
+                            <th scope="col">Mover</th>
+                            <th scope="col">Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tramite in tramites %}
+                            <tr>
+                                <td>{{ tramite.id }}</td>
+                                <td>{{ tramite.no_oficio }}</td>
+                                <td>{{ tramite.tramite_tipo }}</td>
+                                <td>{{ tramite.prioridad }}</td>
+                                <td>{{ tramite.fecha_recepcion }}</td>
+                                <td>{{ tramite.fecha_vencimiento }}</td>
+                                <td>{{ tramite.receptor_responsable }}</td>
+                                <td>{{ tramite.inspector_responsable }} </td>
+                                <td>{{ tramite.resultor_responsable }} </td>
+                                <td>
+                                    <!-- Botón para abrir el modal -->
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal{{ tramite.id }}">Mover</button>
+                                </td>
+                                <td><button class="btn btn-danger btn-sm">Eliminar</button></td>
+                            </tr>
+
+                            <!-- Modal para cambiar de etapa -->
+                            <div class="modal fade" id="modal{{ tramite.id }}" tabindex="-1" aria-labelledby="modalLabel{{ tramite.id }}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="modalLabel{{ tramite.id }}">Cambiar Etapa - Tramite {{ tramite.no_oficio }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="POST" action="{% url 'cambiar_etapa' tramite.id %}">
+                                                {% csrf_token %}
+                                                <div class="mb-3">
+                                                    <label for="etapa" class="form-label">Seleccionar Etapa</label>
+                                                    <select class="form-select" id="etapa" name="etapa">
+                                                        {% for etapa in etapas %}
+                                                            <option value="{{ etapa.id }}" {% if etapa == tramite.etapa %}selected{% endif %}>{{ etapa.nombre }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <button type="submit" class="btn btn-primary">Cambiar Etapa</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

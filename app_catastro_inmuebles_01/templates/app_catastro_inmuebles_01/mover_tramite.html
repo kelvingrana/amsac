@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mover Trámite</title>
+</head>
+<body>
+
+
+
+    
+    <h1>Mover Trámite: {{ tramite.nombre }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Cambiar Estado</button>
+    </form>
+</body>
+</html>

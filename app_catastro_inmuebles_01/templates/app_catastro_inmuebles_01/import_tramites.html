@@ -1,0 +1,68 @@
+
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+
+    <!-- Mensajes de éxito, error o advertencia -->
+    {% if messages %}
+        <div class="container mt-4">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <!-- Íconos basados en el tipo de mensaje -->
+                    {% if message.tags == 'success' %}
+                        <i class="fas fa-check-circle"></i> 
+                    {% elif message.tags == 'error' %}
+                        <i class="fas fa-exclamation-circle"></i> 
+                    {% elif message.tags == 'warning' %}
+                        <i class="fas fa-exclamation-triangle"></i> 
+                    {% endif %}
+                    <strong>{{ message }}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+
+    <div class="container">
+        <h1>Importar y Exportar Trámites</h1>
+
+        <!-- Sección de Importación -->
+        <div class="import-section">
+            <h2>Importar desde Excel</h2>
+            
+            <!-- Formulario para Importar Trámites -->
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="excel_file">Seleccionar archivo Excel:</label>
+                    <input type="file" name="excel_file" id="excel_file" accept=".xlsx, .xls">
+                </div>
+                <button type="submit" class="btn btn-primary">Importar</button>
+            </form>
+
+            {% if error %}
+                <div class="alert alert-danger mt-3">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </div>
+
+        <hr>
+
+        <!-- Sección de Exportación -->
+        <div class="export-section">
+            <h2>Exportar a Excel</h2>
+
+            <!-- Botón para descargar los trámites a Excel, vículado a la vista de exportación -->
+            <a href="{% url 'export_tramites' %}" class="btn btn-success">Descargar Trámites en Excel</a>
+        </div>
+    </div>
+
+
+
+{% endblock %}
